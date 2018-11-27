@@ -24,6 +24,8 @@ namespace Mageplaza\SameOrderNumber\Plugin;
 use Magento\SalesSequence\Model\Sequence;
 use Magento\Framework\App\Request\Http;
 use Magento\Sales\Model\Order;
+use Magento\Framework\App\State;
+use Magento\Framework\App\Area;
 
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 use Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply;
@@ -46,18 +48,36 @@ class SameOrderNumber
     protected $_helperData;
 
     /**
+     * @var \Magento\Framework\App\State
+     */
+    protected $_state;
+
+    /**
      * SameOrderNumber constructor.
      * @param Http $request
      * @param Order $order
      * @param HelperData $helperData
+     * @param State $state
      */
     public function __construct(Http $request,
                                 Order $order,
-                                HelperData $helperData)
+                                HelperData $helperData,
+                                State $state)
     {
         $this->_request = $request;
         $this->_order = $order;
         $this->_helperData = $helperData;
+        $this->_state = $state;
+    }
+
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isBackend()
+    {
+        return $this->_state->getAreaCode() === Area::AREA_ADMINHTML;
     }
 
     /**
@@ -111,24 +131,28 @@ class SameOrderNumber
      * @param Sequence $subject
      * @param \Closure $proceed
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function aroundGetCurrentValue(Sequence $subject, \Closure $proceed)
     {
         $defaultIncrementId = $proceed();
-        $type = null;
-        $storeId = $this->getOrder()->getStore()->getId();
-        if($this->_helperData->isEnabled($storeId)) {
-            if($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
-                $type = Apply::INVOICE;
+        if($this->isBackend()) {
+            $type = null;
+            $storeId = $this->getOrder()->getStore()->getId();
+            if($this->_helperData->isEnabled($storeId)) {
+                if($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
+                    $type = Apply::INVOICE;
+                }
+                if($this->_request->getPost('shipment') && $this->_helperData->isApplyShipment($storeId)) {
+                    $type = Apply::SHIPMENT;
+                }
+                if($this->_request->getPost('creditmemo') && $this->_helperData->isApplyCreditMemo($storeId)) {
+                    $type = Apply::CREDIT_MEMO;
+                }
+                return $this->processIncrementId($defaultIncrementId, $type);
             }
-            if($this->_request->getPost('shipment') && $this->_helperData->isApplyShipment($storeId)) {
-                $type = Apply::SHIPMENT;
-            }
-            if($this->_request->getPost('creditmemo') && $this->_helperData->isApplyCreditMemo($storeId)) {
-                $type = Apply::CREDIT_MEMO;
-            }
-            return $this->processIncrementId($defaultIncrementId, $type);
-        }
             return $defaultIncrementId;
+        }
+        return $defaultIncrementId;
     }
 }

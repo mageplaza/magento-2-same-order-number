@@ -37,14 +37,14 @@ class Data extends AbstractData
     }
 
     public function isApplyInvoice($storeId = null) {
-        if (in_array(Apply::SHIPMENT, $this->getApplyForOption($storeId))) {
+        if (in_array(Apply::INVOICE, $this->getApplyForOption($storeId))) {
             return true;
         }
         return false;
     }
 
     public function isApplyShipment($storeId = null) {
-        if (in_array(Apply::INVOICE, $this->getApplyForOption($storeId))) {
+        if (in_array(Apply::SHIPMENT, $this->getApplyForOption($storeId))) {
             return true;
         }
         return false;
