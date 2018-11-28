@@ -113,29 +113,36 @@ class SameOrderNumber
             switch ($type) {
                 case Apply::INVOICE:
                     if($invoice != null) {
-                        $nextInvoiceId = 1;
-                        $orderIncrementId = $invoice->getOrder()->getIncrementId();
-                        $newIncrementId = $orderIncrementId . "-" .$nextInvoiceId;
+                        $newIncrementId = $invoice->getOrder()->getIncrementId();
                         return $newIncrementId;
                     }
-                    $invoiceCollection = $this->getOrder()->getInvoiceCollection();
+                    $invoiceCollectionIds = $this->getOrder()->getInvoiceCollection()->getAllIds();
                     $orderIncrementId = $this->getOrder()->getIncrementId();
-                    $nextInvoiceId = count($invoiceCollection->getAllIds()) + 1;
-                    $newIncrementId = $orderIncrementId . "-" .$nextInvoiceId;
+                    $newIncrementId = $orderIncrementId;
+                    if(count($invoiceCollectionIds) > 0) {
+                        $nextInvoiceId = count($invoiceCollectionIds) + 1;
+                        $newIncrementId = $orderIncrementId . "-" .$nextInvoiceId;
+                    }
                     return $newIncrementId;
                     break;
                 case Apply::SHIPMENT:
-                    $shipmentCollection = $this->getOrder()->getShipmentsCollection();
+                    $shipmentCollectionIds = $this->getOrder()->getShipmentsCollection()->getAllIds();
                     $orderIncrementId = $this->getOrder()->getIncrementId();
-                    $nextShipmentId = count($shipmentCollection->getAllIds()) + 1;
-                    $newIncrementId = $orderIncrementId . "-" .$nextShipmentId;
+                    $newIncrementId = $orderIncrementId;
+                    if(count($shipmentCollectionIds) > 0) {
+                        $nextShipmentId = count($shipmentCollectionIds) + 1;
+                        $newIncrementId = $orderIncrementId . "-" .$nextShipmentId;
+                    }
                     return $newIncrementId;
                     break;
                 case Apply::CREDIT_MEMO:
-                    $creditMemoCollection = $this->getOrder()->getCreditmemosCollection();
+                    $creditMemoCollectionIds = $this->getOrder()->getCreditmemosCollection()->getAllIds();
                     $orderIncrementId = $this->getOrder()->getIncrementId();
-                    $nextCreditMemoId = count($creditMemoCollection->getAllIds()) + 1;
-                    $newIncrementId = $orderIncrementId . "-" .$nextCreditMemoId;
+                    $newIncrementId = $orderIncrementId;
+                    if(count($creditMemoCollectionIds) > 0) {
+                        $nextCreditMemoId = count($creditMemoCollectionIds) + 1;
+                        $newIncrementId = $orderIncrementId . "-" .$nextCreditMemoId;
+                    }
                     return $newIncrementId;
                     break;
             }
