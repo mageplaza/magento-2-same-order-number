@@ -26,6 +26,8 @@ use Magento\Framework\App\Request\Http;
 use Magento\Sales\Model\Order;
 use Magento\Framework\App\State;
 use Magento\Framework\App\Area;
+use Magento\Framework\Registry;
+use Magento\Sales\Model\Order\Invoice;
 
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 use Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply;
@@ -53,23 +55,30 @@ class SameOrderNumber
     protected $_state;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $_registry;
+
+    /**
      * SameOrderNumber constructor.
      * @param Http $request
      * @param Order $order
      * @param HelperData $helperData
      * @param State $state
+     * @param Registry $registry
      */
     public function __construct(Http $request,
                                 Order $order,
                                 HelperData $helperData,
-                                State $state)
+                                State $state,
+                                Registry $registry)
     {
         $this->_request = $request;
         $this->_order = $order;
         $this->_helperData = $helperData;
         $this->_state = $state;
+        $this->_registry = $registry;
     }
-
 
     /**
      * @return bool
@@ -96,12 +105,19 @@ class SameOrderNumber
      * Process next counter
      * @param $defaultIncrementId
      * @param $type
+     * @param Invoice|null $invoice
      * @return string
      */
-    public function processIncrementId($defaultIncrementId, $type) {
+    public function processIncrementId($defaultIncrementId, $type, Invoice $invoice = null) {
         if($type != null) {
             switch ($type) {
                 case Apply::INVOICE:
+                    if($invoice != null) {
+                        $nextInvoiceId = 1;
+                        $orderIncrementId = $invoice->getOrder()->getIncrementId();
+                        $newIncrementId = $orderIncrementId . "-" .$nextInvoiceId;
+                        return $newIncrementId;
+                    }
                     $invoiceCollection = $this->getOrder()->getInvoiceCollection();
                     $orderIncrementId = $this->getOrder()->getIncrementId();
                     $nextInvoiceId = count($invoiceCollection->getAllIds()) + 1;
@@ -136,8 +152,8 @@ class SameOrderNumber
     public function aroundGetCurrentValue(Sequence $subject, \Closure $proceed)
     {
         $defaultIncrementId = $proceed();
+        $type = null;
         if($this->isBackend()) {
-            $type = null;
             $storeId = $this->getOrder()->getStore()->getId();
             if($this->_helperData->isEnabled($storeId)) {
                 if($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
@@ -151,8 +167,19 @@ class SameOrderNumber
                 }
                 return $this->processIncrementId($defaultIncrementId, $type);
             }
-            return $defaultIncrementId;
+        }
+        if($this->_registry->registry('son_new_invoice')) {
+            /**
+             * @var \Magento\Sales\Model\Order\Invoice $invoice
+             */
+            $invoice = $this->_registry->registry('son_new_invoice');
+            $storeId = $invoice->getStore()->getId();
+            if($this->_helperData->isApplyInvoice($storeId)) {
+                $type = Apply::INVOICE;
+                return $this->processIncrementId($defaultIncrementId, $type, $invoice);
+            }
         }
         return $defaultIncrementId;
+
     }
 }
