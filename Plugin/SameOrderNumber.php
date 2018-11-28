@@ -180,6 +180,5 @@ class SameOrderNumber
             }
         }
         return $defaultIncrementId;
-
     }
 }
