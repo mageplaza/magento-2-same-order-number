@@ -120,7 +120,7 @@ class SameOrderNumber
                     $orderIncrementId = $this->getOrder()->getIncrementId();
                     $newIncrementId = $orderIncrementId;
                     if(count($invoiceCollectionIds) > 0) {
-                        $nextInvoiceId = count($invoiceCollectionIds) + 1;
+                        $nextInvoiceId = count($invoiceCollectionIds);
                         $newIncrementId = $orderIncrementId . "-" .$nextInvoiceId;
                     }
                     return $newIncrementId;
@@ -130,7 +130,7 @@ class SameOrderNumber
                     $orderIncrementId = $this->getOrder()->getIncrementId();
                     $newIncrementId = $orderIncrementId;
                     if(count($shipmentCollectionIds) > 0) {
-                        $nextShipmentId = count($shipmentCollectionIds) + 1;
+                        $nextShipmentId = count($shipmentCollectionIds);
                         $newIncrementId = $orderIncrementId . "-" .$nextShipmentId;
                     }
                     return $newIncrementId;
@@ -140,7 +140,7 @@ class SameOrderNumber
                     $orderIncrementId = $this->getOrder()->getIncrementId();
                     $newIncrementId = $orderIncrementId;
                     if(count($creditMemoCollectionIds) > 0) {
-                        $nextCreditMemoId = count($creditMemoCollectionIds) + 1;
+                        $nextCreditMemoId = count($creditMemoCollectionIds);
                         $newIncrementId = $orderIncrementId . "-" .$nextCreditMemoId;
                     }
                     return $newIncrementId;
