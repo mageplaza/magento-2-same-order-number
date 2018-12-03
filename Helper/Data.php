@@ -22,6 +22,7 @@
 namespace Mageplaza\SameOrderNumber\Helper;
 
 use Mageplaza\Core\Helper\AbstractData;
+use Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply;
 
 /**
  * Class Data
@@ -29,5 +30,26 @@ use Mageplaza\Core\Helper\AbstractData;
  */
 class Data extends AbstractData
 {
-    const CONFIG_MODULE_PATH = 'sameordernumber';
+    const CONFIG_MODULE_PATH = 'mpsameordernumber';
+
+    public function getApplyForOption($storeId = null)
+    {
+        return explode(",", $this->getConfigGeneral('apply', $storeId));
+    }
+
+    public function isApplyInvoice($storeId = null)
+    {
+        return in_array(Apply::INVOICE, $this->getApplyForOption($storeId));
+    }
+
+    public function isApplyShipment($storeId = null)
+    {
+        return in_array(Apply::SHIPMENT, $this->getApplyForOption($storeId));
+    }
+
+    public function isApplyCreditMemo($storeId = null)
+    {
+        return in_array(Apply::CREDIT_MEMO, $this->getApplyForOption($storeId));
+    }
+
 }

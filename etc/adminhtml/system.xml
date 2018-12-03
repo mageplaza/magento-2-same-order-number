@@ -27,11 +27,19 @@
             <tab>mageplaza</tab>
             <resource>Mageplaza_SameOrderNumber::configuration</resource>
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>General</label>
+                <label>General Configuration</label>
                 <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Select <b>Yes</b> to enable this module.]]></comment>
+                </field>
+                <field id="apply" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Apply for</label>
+                    <source_model>\Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply</source_model>
+                    <comment>If increment id exist, a sufix number will be added. Ex: 100001-1, 100001-2</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
                 </field>
             </group>
         </section>
