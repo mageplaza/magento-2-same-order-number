@@ -24,7 +24,6 @@ namespace Mageplaza\SameOrderNumber\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Registry;
-
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 
 class InvoiceSaveBefore implements ObserverInterface
@@ -41,18 +40,21 @@ class InvoiceSaveBefore implements ObserverInterface
 
     /**
      * InvoiceSaveBefore constructor.
+     *
      * @param Registry $registry
      * @param HelperData $helperData
      */
-    public function __construct(Registry $registry,
-                                HelperData $helperData)
+    public function __construct(
+        Registry $registry,
+        HelperData $helperData)
     {
-        $this->_registry = $registry;
+        $this->_registry   = $registry;
         $this->_helperData = $helperData;
     }
 
     /**
      * @param Observer $observer
+     *
      * @return InvoiceSaveBefore
      */
     public function execute(Observer $observer)
@@ -61,12 +63,13 @@ class InvoiceSaveBefore implements ObserverInterface
          * @var \Magento\Sales\Model\Order\Invoice $invoice
          */
         $invoice = $observer->getData('invoice');
-        if(!$invoice) {
+        if (!$invoice) {
             return $this;
         }
-        if($invoice->isObjectNew() && $this->_helperData->isApplyInvoice()) {
+        if ($invoice->isObjectNew() && $this->_helperData->isApplyInvoice($invoice->getStore()->getId())) {
             $this->_registry->register('son_new_invoice', $invoice);
         }
+
         return $this;
     }
 }

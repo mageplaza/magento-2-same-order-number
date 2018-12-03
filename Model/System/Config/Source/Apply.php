@@ -25,8 +25,8 @@ use Magento\Framework\Option\ArrayInterface;
 
 class Apply implements ArrayInterface
 {
-    const SHIPMENT = "Shipment";
-    const INVOICE = "Invoice";
+    const SHIPMENT    = "Shipment";
+    const INVOICE     = "Invoice";
     const CREDIT_MEMO = "Credit Memo";
 
     /**
@@ -41,6 +41,7 @@ class Apply implements ArrayInterface
             ['label' => __('Invoice'), 'value' => self::INVOICE],
             ['label' => __('Credit Memo'), 'value' => self::CREDIT_MEMO]
         ];
+
         return $applyOptions;
     }
 }
