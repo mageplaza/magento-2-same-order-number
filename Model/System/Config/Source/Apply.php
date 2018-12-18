@@ -23,6 +23,10 @@ namespace Mageplaza\SameOrderNumber\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
+/**
+ * Class Apply
+ * @package Mageplaza\SameOrderNumber\Model\System\Config\Source
+ */
 class Apply implements ArrayInterface
 {
     const SHIPMENT    = "Shipment";

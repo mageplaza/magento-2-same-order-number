@@ -1,1 +1,9 @@
-General,General
+Shipment,Shipment
+Invoice,Invoice
+"Credit Memo","Credit Memo"
+"Same Order Number","Same Order Number"
+"General Configuration","General Configuration"
+Enable,Enable
+"Select <b>Yes</b> to enable this module.","Select <b>Yes</b> to enable this module."
+"Apply for","Apply for"
+"If increment id exist, a sufix number will be added. Ex: 100001-1, 100001-2","If increment id exist, a sufix number will be added. Ex: 100001-1, 100001-2"

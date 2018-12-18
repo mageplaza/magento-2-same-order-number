@@ -29,6 +29,10 @@ use Magento\SalesSequence\Model\Sequence;
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 use Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply;
 
+/**
+ * Class SameOrderNumber
+ * @package Mageplaza\SameOrderNumber\Plugin
+ */
 class SameOrderNumber
 {
     /**
@@ -63,7 +67,8 @@ class SameOrderNumber
         Http $request,
         Order $order,
         HelperData $helperData,
-        Registry $registry)
+        Registry $registry
+    )
     {
         $this->_request    = $request;
         $this->_order      = $order;
@@ -132,7 +137,6 @@ class SameOrderNumber
                     $creditMemoCollectionIds = $this->getOrder()->getCreditmemosCollection()->getAllIds();
 
                     return $this->getNextId($creditMemoCollectionIds);
-
             }
         }
 
