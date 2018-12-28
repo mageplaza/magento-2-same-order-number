@@ -1,6 +1,10 @@
-# Magento 2 Same Order Number Extension
+# Magento 2 Same Order Number Free Extension by Mageplaza
 
 [Same Order Number Extension](https://www.mageplaza.com/magento-2-same-order-number/) by **Mageplaza** allows store owners to easily create the ID of Invoice, Shipment and Credit Memo the same as the ID of the original Order. This will significantly contribute to a well-managed order information system.
+
+[![Latest Stable Version](https://poser.pugx.org/mageplaza/module-same-order-number/v/stable)](https://packagist.org/packages/mageplaza/module-same-order-number)
+[![Total Downloads](https://poser.pugx.org/mageplaza/module-same-order-number/downloads)](https://packagist.org/packages/mageplaza/module-same-order-number)
+
 
 ## 1. Documentation
 - [Installation guide](https://www.mageplaza.com/install-magento-2-extension/)
