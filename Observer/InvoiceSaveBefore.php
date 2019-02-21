@@ -66,8 +66,16 @@ class InvoiceSaveBefore implements ObserverInterface
         if (!$invoice) {
             return $this;
         }
-        if ($invoice->isObjectNew() && $this->_helperData->isApplyInvoice($invoice->getStore()->getId())) {
-            $this->_registry->register('son_new_invoice', $invoice);
+
+        if($this->_helperData->isAdmin()) {
+            return $this;
+        }
+
+        if($invoice->isObjectNew()) {
+            $storeId = $invoice->getStore()->getId();
+            if ($this->_helperData->isEnabled($storeId) && $this->_helperData->isApplyInvoice($storeId)) {
+                $this->_registry->register('son_new_invoice', $invoice);
+            }
         }
 
         return $this;
