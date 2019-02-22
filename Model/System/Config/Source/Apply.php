@@ -25,9 +25,9 @@ use Magento\Framework\Option\ArrayInterface;
 
 class Apply implements ArrayInterface
 {
-    const SHIPMENT    = "Shipment";
-    const INVOICE     = "Invoice";
-    const CREDIT_MEMO = "Credit Memo";
+    const SHIPMENT    = "shipment";
+    const INVOICE     = "invoice";
+    const CREDIT_MEMO = "creditmemo";
 
     /**
      * Return array of options as value-label pairs

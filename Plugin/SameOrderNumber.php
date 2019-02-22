@@ -28,6 +28,9 @@ use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\SalesSequence\Model\Sequence;
+use Magento\SalesSequence\Model\ResourceModel\Meta;
+use Magento\Framework\App\ResourceConnection as AppResource;
+
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 use Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply;
 
@@ -69,6 +72,16 @@ class SameOrderNumber
     protected $_registry;
 
     /**
+     * @var \Magento\SalesSequence\Model\ResourceModel\Meta
+     */
+    protected $_meta;
+
+    /**
+     * @var \Magento\Framework\App\ResourceConnection as AppResource
+     */
+    protected $_connection;
+
+    /**
      * SameOrderNumber constructor.
      *
      * @param Http $request
@@ -78,6 +91,8 @@ class SameOrderNumber
      * @param Creditmemo $creditMemo
      * @param HelperData $helperData
      * @param Registry $registry
+     * @param Meta $meta
+     * @param AppResource $connection
      */
     public function __construct(
         Http $request,
@@ -86,7 +101,9 @@ class SameOrderNumber
         Shipment $shipment,
         Creditmemo $creditMemo,
         HelperData $helperData,
-        Registry $registry)
+        Registry $registry,
+        Meta $meta,
+        AppResource $connection)
     {
         $this->_request         = $request;
         $this->_order           = $order;
@@ -95,6 +112,8 @@ class SameOrderNumber
         $this->_creditMemo      = $creditMemo;
         $this->_helperData      = $helperData;
         $this->_registry        = $registry;
+        $this->_meta            = $meta;
+        $this->_connection      = $connection->getConnection();
     }
 
     /**
@@ -195,6 +214,73 @@ class SameOrderNumber
     }
 
     /**
+     * @param $storeId
+     *
+     * @return string|null
+     */
+    public function getType($storeId) {
+        $type = null;
+        if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
+            $type = Apply::INVOICE;
+            $invoiceData = $this->_request->getPost('invoice');
+            if (isset($invoiceData['do_shipment'])) {
+                $type = Apply::SHIPMENT;
+            }
+        }
+        if ($this->_request->getPost('shipment') && $this->_helperData->isApplyShipment($storeId)) {
+            $type = Apply::SHIPMENT;
+        }
+        if ($this->_request->getPost('creditmemo') && $this->_helperData->isApplyCreditMemo($storeId)) {
+            $type = Apply::CREDIT_MEMO;
+        }
+        return $type;
+    }
+
+    /**
+     * @param $type
+     * @param $storeId
+     * @param $oderId
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function jumpIncrementId($type, $storeId, $oderId) {
+        if(!is_null($type)) {
+            $sequenceTable = $this->_meta->loadByEntityTypeAndStore($type, $storeId)->getSequenceTable();
+            $idField =  $this->_connection->getAutoIncrementField($sequenceTable);
+            $select = $this->_connection->select()->from($sequenceTable)->order($idField . " " . "DESC");
+            $curIncrementId = $this->_connection->fetchOne($select);
+            if((int) $oderId > (int) $curIncrementId) {
+                $this->_connection->insert($sequenceTable, [$idField => (int) $oderId]);
+            }
+        }
+
+    }
+
+    /**
+     * @param Sequence $subject
+     *
+     * @return $this
+     * @SuppressWarnings(Unused)
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function beforeGetNextValue(Sequence $subject) {
+        if($this->_helperData->isAdmin()) {
+            $storeId = $this->getOrder()->getStore()->getId();
+            $orderIncrementId = $this->getOrder()->getIncrementId();
+            if((int) $storeId > 1) {
+                $length = strlen($orderIncrementId) - strlen($storeId);
+                $orderIncrementId = substr($orderIncrementId, strlen($storeId), $length);
+            }
+
+            if ($this->_helperData->isEnabled($storeId)) {
+                $type = $this->getType($storeId);
+                $this->jumpIncrementId($type, $storeId, $orderIncrementId);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @param Sequence $subject
      * @param \Closure $proceed
      *
@@ -204,25 +290,14 @@ class SameOrderNumber
     public function aroundGetCurrentValue(Sequence $subject, \Closure $proceed)
     {
         $defaultIncrementId = $proceed();
-        $type               = null;
         if($this->_helperData->isAdmin()) {
             $storeId = $this->getOrder()->getStore()->getId();
             if ($this->_helperData->isEnabled($storeId)) {
-                if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
-                    $type = Apply::INVOICE;
-                }
-                if ($this->_request->getPost('shipment') && $this->_helperData->isApplyShipment($storeId)) {
-                    $type = Apply::SHIPMENT;
-                }
-                if ($this->_request->getPost('creditmemo') && $this->_helperData->isApplyCreditMemo($storeId)) {
-                    $type = Apply::CREDIT_MEMO;
-                }
+                $type = $this->getType($storeId);
                 return $this->processIncrementId($defaultIncrementId, $type);
             }
         }
-        /**
-         * @var \Magento\Sales\Model\Order\Invoice $invoice
-         */
+
         if ($invoice = $this->_registry->registry('son_new_invoice')) {
             return $this->processIncrementId($defaultIncrementId, Apply::INVOICE, $invoice);
         }
