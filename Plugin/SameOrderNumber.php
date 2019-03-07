@@ -258,12 +258,11 @@ class SameOrderNumber
 
     /**
      * @param Sequence $subject
-     *
-     * @return $this
-     * @SuppressWarnings(Unused)
+     * @param callable $proceed
+     * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function beforeGetNextValue(Sequence $subject) {
+    public function aroundGetNextValue(Sequence $subject, callable $proceed) {
         if($this->_helperData->isAdmin()) {
             $storeId = $this->getOrder()->getStore()->getId();
             $orderIncrementId = $this->getOrder()->getIncrementId();
@@ -277,7 +276,8 @@ class SameOrderNumber
                 $this->jumpIncrementId($type, $storeId, $orderIncrementId);
             }
         }
-        return $this;
+        $result = $proceed();
+        return $result;
     }
 
     /**
