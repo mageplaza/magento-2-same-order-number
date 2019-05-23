@@ -32,24 +32,39 @@ class Data extends AbstractData
 {
     const CONFIG_MODULE_PATH = 'mpsameordernumber';
 
+    /**
+     * @param null $storeId
+     * @return array
+     */
     public function getApplyForOption($storeId = null)
     {
         return explode(",", $this->getConfigGeneral('apply', $storeId));
     }
 
+    /**
+     * @param null $storeId
+     * @return bool
+     */
     public function isApplyInvoice($storeId = null)
     {
         return in_array(Apply::INVOICE, $this->getApplyForOption($storeId));
     }
 
+    /**
+     * @param null $storeId
+     * @return bool
+     */
     public function isApplyShipment($storeId = null)
     {
         return in_array(Apply::SHIPMENT, $this->getApplyForOption($storeId));
     }
 
+    /**
+     * @param null $storeId
+     * @return bool
+     */
     public function isApplyCreditMemo($storeId = null)
     {
         return in_array(Apply::CREDIT_MEMO, $this->getApplyForOption($storeId));
     }
-
 }

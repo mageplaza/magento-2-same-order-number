@@ -26,6 +26,10 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Registry;
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 
+/**
+ * Class InvoiceSaveBefore
+ * @package Mageplaza\SameOrderNumber\Observer
+ */
 class InvoiceSaveBefore implements ObserverInterface
 {
     /**

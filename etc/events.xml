@@ -22,6 +22,6 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_order_invoice_save_before">
-        <observer name="affiliateObserver" instance="Mageplaza\SameOrderNumber\Observer\InvoiceSaveBefore" />
+        <observer name="affiliateObserver" instance="Mageplaza\SameOrderNumber\Observer\InvoiceSaveBefore"/>
     </event>
 </config>
