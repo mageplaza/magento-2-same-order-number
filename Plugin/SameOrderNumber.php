@@ -21,19 +21,24 @@
 
 namespace Mageplaza\SameOrderNumber\Plugin;
 
+use Closure;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\App\ResourceConnection as AppResource;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Registry;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Shipment;
-use Magento\Sales\Model\Order\Creditmemo;
-use Magento\SalesSequence\Model\Sequence;
 use Magento\SalesSequence\Model\ResourceModel\Meta;
-use Magento\Framework\App\ResourceConnection as AppResource;
-
+use Magento\SalesSequence\Model\Sequence;
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 use Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply;
 
+/**
+ * Class SameOrderNumber
+ * @package Mageplaza\SameOrderNumber\Plugin
+ */
 class SameOrderNumber
 {
     /**
@@ -47,17 +52,17 @@ class SameOrderNumber
     protected $_order;
 
     /**
-     * @var \Magento\Sales\Model\Order\Invoice
+     * @var Invoice
      */
     protected $_invoice;
 
     /**
-     * @var \Magento\Sales\Model\Order\Shipment
+     * @var Shipment
      */
     protected $_shipment;
 
     /**
-     * @var \Magento\Sales\Model\Order\Creditmemo
+     * @var Creditmemo
      */
     protected $_creditMemo;
 
@@ -67,17 +72,17 @@ class SameOrderNumber
     protected $_helperData;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     protected $_registry;
 
     /**
-     * @var \Magento\SalesSequence\Model\ResourceModel\Meta
+     * @var Meta
      */
     protected $_meta;
 
     /**
-     * @var \Magento\Framework\App\ResourceConnection as AppResource
+     * @var AppResource as AppResource
      */
     protected $_connection;
 
@@ -103,17 +108,17 @@ class SameOrderNumber
         HelperData $helperData,
         Registry $registry,
         Meta $meta,
-        AppResource $connection)
-    {
-        $this->_request         = $request;
-        $this->_order           = $order;
-        $this->_invoice         = $invoice;
-        $this->_shipment        = $shipment;
-        $this->_creditMemo      = $creditMemo;
-        $this->_helperData      = $helperData;
-        $this->_registry        = $registry;
-        $this->_meta            = $meta;
-        $this->_connection      = $connection->getConnection();
+        AppResource $connection
+    ) {
+        $this->_request = $request;
+        $this->_order = $order;
+        $this->_invoice = $invoice;
+        $this->_shipment = $shipment;
+        $this->_creditMemo = $creditMemo;
+        $this->_helperData = $helperData;
+        $this->_registry = $registry;
+        $this->_meta = $meta;
+        $this->_connection = $connection->getConnection();
     }
 
     /**
@@ -123,8 +128,9 @@ class SameOrderNumber
     public function getOrder()
     {
         $orderId = $this->_request->getParam('order_id');
-        /** @var \Magento\Sales\Model\Order $order */
+        /** @var Order $order */
         $order = $this->_order->load($orderId);
+
         return $order;
     }
 
@@ -136,22 +142,23 @@ class SameOrderNumber
      */
     public function getNextId($collection, $type)
     {
-        $orderIncrementId   = $this->getOrder()->getIncrementId();
-        $newIncrementId     = $orderIncrementId;
-        $totalIds           = count($collection);
+        $orderIncrementId = $this->getOrder()->getIncrementId();
+        $newIncrementId = $orderIncrementId;
+        $totalIds = count($collection);
         $firstId = $this->isIncrementIdUnique($orderIncrementId, $type);
 
-        if($firstId && $totalIds <= 0) {
+        if ($firstId && $totalIds <= 0) {
             $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
         }
 
         if ($totalIds > 0) {
             $newIncrementId = $orderIncrementId . "-" . $totalIds;
             $nextId = $this->isIncrementIdUnique($newIncrementId, $type);
-            if($nextId) {
+            if ($nextId) {
                 $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
             }
         }
+
         return $newIncrementId;
     }
 
@@ -160,22 +167,24 @@ class SameOrderNumber
      * @param $type
      * @return bool
      */
-    public function isIncrementIdUnique($incrementId, $type) {
+    public function isIncrementIdUnique($incrementId, $type)
+    {
         $nextId = null;
         $collection = null;
         switch ($type) {
-            case Apply::INVOICE :
+            case Apply::INVOICE:
                 $collection = $this->_invoice->getCollection();
                 break;
-            case Apply::SHIPMENT :
+            case Apply::SHIPMENT:
                 $collection = $this->_shipment->getCollection();
                 break;
-            case Apply::CREDIT_MEMO :
+            case Apply::CREDIT_MEMO:
                 $collection = $this->_creditMemo->getCollection();
                 break;
         }
         $nextId = $collection->addFieldToFilter('increment_id', $incrementId)->getLastItem()->getId();
-        return !is_null($nextId);
+
+        return $nextId !== null;
     }
 
     /**
@@ -189,27 +198,32 @@ class SameOrderNumber
      */
     public function processIncrementId($defaultIncrementId, $type, Invoice $invoice = null)
     {
-        if ($type != null) {
+        if ($type !== null) {
             switch ($type) {
                 case Apply::INVOICE:
-                    if ($invoice != null) {
+                    if ($invoice !== null) {
                         $orderIncrementId = $invoice->getOrder()->getIncrementId();
                         $isNotUnique = $this->isIncrementIdUnique($orderIncrementId, Apply::INVOICE);
-                        if($isNotUnique) {
+                        if ($isNotUnique) {
                             $orderIncrementId = $invoice->getOrder()->getIncrementId() . "-1";
                         }
+
                         return $orderIncrementId;
                     }
                     $invoiceColIds = $this->getOrder()->getInvoiceCollection()->getAllIds();
+
                     return $this->getNextId($invoiceColIds, $type);
                 case Apply::SHIPMENT:
                     $shipmentColIds = $this->getOrder()->getShipmentsCollection()->getAllIds();
+
                     return $this->getNextId($shipmentColIds, $type);
                 case Apply::CREDIT_MEMO:
                     $creditMemoColIds = $this->getOrder()->getCreditmemosCollection()->getAllIds();
+
                     return $this->getNextId($creditMemoColIds, $type);
             }
         }
+
         return $defaultIncrementId;
     }
 
@@ -218,7 +232,8 @@ class SameOrderNumber
      *
      * @return string|null
      */
-    public function getType($storeId) {
+    public function getType($storeId)
+    {
         $type = null;
         if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
             $type = Apply::INVOICE;
@@ -233,6 +248,7 @@ class SameOrderNumber
         if ($this->_request->getPost('creditmemo') && $this->_helperData->isApplyCreditMemo($storeId)) {
             $type = Apply::CREDIT_MEMO;
         }
+
         return $type;
     }
 
@@ -241,32 +257,33 @@ class SameOrderNumber
      * @param $storeId
      * @param $oderId
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function jumpIncrementId($type, $storeId, $oderId) {
-        if(!is_null($type)) {
+    public function jumpIncrementId($type, $storeId, $oderId)
+    {
+        if ($type !== null) {
             $sequenceTable = $this->_meta->loadByEntityTypeAndStore($type, $storeId)->getSequenceTable();
-            $idField =  $this->_connection->getAutoIncrementField($sequenceTable);
-            $select = $this->_connection->select()->from($sequenceTable)->order($idField . " " . "DESC");
+            $idField = $this->_connection->getAutoIncrementField($sequenceTable);
+            $select = $this->_connection->select()->from($sequenceTable)->order($idField . ' DESC');
             $curIncrementId = $this->_connection->fetchOne($select);
-            if((int) $oderId > (int) $curIncrementId) {
-                $this->_connection->insert($sequenceTable, [$idField => (int) $oderId]);
+            if ((int)$oderId > (int)$curIncrementId) {
+                $this->_connection->insert($sequenceTable, [$idField => (int)$oderId]);
             }
         }
-
     }
 
     /**
      * @param Sequence $subject
      * @param callable $proceed
      * @return mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function aroundGetNextValue(Sequence $subject, callable $proceed) {
-        if($this->_helperData->isAdmin()) {
+    public function aroundGetNextValue(Sequence $subject, callable $proceed)
+    {
+        if ($this->_helperData->isAdmin()) {
             $storeId = $this->getOrder()->getStore()->getId();
             $orderIncrementId = $this->getOrder()->getIncrementId();
-            if((int) $storeId > 1) {
+            if ($storeId > 1) {
                 $length = strlen($orderIncrementId) - strlen($storeId);
                 $orderIncrementId = substr($orderIncrementId, strlen($storeId), $length);
             }
@@ -276,24 +293,25 @@ class SameOrderNumber
                 $this->jumpIncrementId($type, $storeId, $orderIncrementId);
             }
         }
-        $result = $proceed();
-        return $result;
+
+        return $proceed();
     }
 
     /**
      * @param Sequence $subject
-     * @param \Closure $proceed
+     * @param Closure $proceed
      *
      * @return mixed|string
      * @SuppressWarnings(Unused)
      */
-    public function aroundGetCurrentValue(Sequence $subject, \Closure $proceed)
+    public function aroundGetCurrentValue(Sequence $subject, Closure $proceed)
     {
         $defaultIncrementId = $proceed();
-        if($this->_helperData->isAdmin()) {
+        if ($this->_helperData->isAdmin()) {
             $storeId = $this->getOrder()->getStore()->getId();
             if ($this->_helperData->isEnabled($storeId)) {
                 $type = $this->getType($storeId);
+
                 return $this->processIncrementId($defaultIncrementId, $type);
             }
         }
@@ -301,6 +319,7 @@ class SameOrderNumber
         if ($invoice = $this->_registry->registry('son_new_invoice')) {
             return $this->processIncrementId($defaultIncrementId, Apply::INVOICE, $invoice);
         }
+
         return $defaultIncrementId;
     }
 }

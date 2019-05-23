@@ -24,6 +24,7 @@ namespace Mageplaza\SameOrderNumber\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Registry;
+use Magento\Sales\Model\Order\Invoice;
 use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 
 /**
@@ -33,7 +34,7 @@ use Mageplaza\SameOrderNumber\Helper\Data as HelperData;
 class InvoiceSaveBefore implements ObserverInterface
 {
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     protected $_registry;
 
@@ -50,9 +51,9 @@ class InvoiceSaveBefore implements ObserverInterface
      */
     public function __construct(
         Registry $registry,
-        HelperData $helperData)
-    {
-        $this->_registry   = $registry;
+        HelperData $helperData
+    ) {
+        $this->_registry = $registry;
         $this->_helperData = $helperData;
     }
 
@@ -63,23 +64,15 @@ class InvoiceSaveBefore implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        /**
-         * @var \Magento\Sales\Model\Order\Invoice $invoice
-         */
+        /** @var Invoice $invoice */
         $invoice = $observer->getData('invoice');
-        if (!$invoice) {
+        if (!$invoice || $this->_helperData->isAdmin() || !$invoice->isObjectNew()) {
             return $this;
         }
 
-        if($this->_helperData->isAdmin()) {
-            return $this;
-        }
-
-        if($invoice->isObjectNew()) {
-            $storeId = $invoice->getStore()->getId();
-            if ($this->_helperData->isEnabled($storeId) && $this->_helperData->isApplyInvoice($storeId)) {
-                $this->_registry->register('son_new_invoice', $invoice);
-            }
+        $storeId = $invoice->getStore()->getId();
+        if ($this->_helperData->isEnabled($storeId) && $this->_helperData->isApplyInvoice($storeId)) {
+            $this->_registry->register('son_new_invoice', $invoice);
         }
 
         return $this;

@@ -32,13 +32,19 @@ class Data extends AbstractData
 {
     const CONFIG_MODULE_PATH = 'mpsameordernumber';
 
+    protected $applyForOption;
+
     /**
      * @param null $storeId
      * @return array
      */
     public function getApplyForOption($storeId = null)
     {
-        return explode(",", $this->getConfigGeneral('apply', $storeId));
+        if (!$this->applyForOption) {
+            $this->applyForOption = explode(',', $this->getConfigGeneral('apply', $storeId));
+        }
+
+        return $this->applyForOption;
     }
 
     /**
