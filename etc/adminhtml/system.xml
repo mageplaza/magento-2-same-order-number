@@ -33,7 +33,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Select <b>Yes</b> to enable this module.]]></comment>
                 </field>
-                <field id="apply" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="apply" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Apply for</label>
                     <source_model>\Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply</source_model>
                     <comment>If increment id exist, a sufix number will be added. Ex: 100001-1, 100001-2</comment>
