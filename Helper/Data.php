@@ -36,6 +36,7 @@ class Data extends AbstractData
 
     /**
      * @param null $storeId
+     *
      * @return array
      */
     public function getApplyForOption($storeId = null)
@@ -49,6 +50,7 @@ class Data extends AbstractData
 
     /**
      * @param null $storeId
+     *
      * @return bool
      */
     public function isApplyInvoice($storeId = null)
@@ -58,6 +60,7 @@ class Data extends AbstractData
 
     /**
      * @param null $storeId
+     *
      * @return bool
      */
     public function isApplyShipment($storeId = null)
@@ -67,6 +70,7 @@ class Data extends AbstractData
 
     /**
      * @param null $storeId
+     *
      * @return bool
      */
     public function isApplyCreditMemo($storeId = null)

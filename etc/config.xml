@@ -28,6 +28,7 @@
             </module>
             <general>
                 <enabled>1</enabled>
+                <apply>shipment,invoice,creditmemo</apply>
             </general>
         </mpsameordernumber>
     </default>

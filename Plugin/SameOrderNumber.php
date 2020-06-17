@@ -110,14 +110,14 @@ class SameOrderNumber
         Meta $meta,
         AppResource $connection
     ) {
-        $this->_request = $request;
-        $this->_order = $order;
-        $this->_invoice = $invoice;
-        $this->_shipment = $shipment;
+        $this->_request    = $request;
+        $this->_order      = $order;
+        $this->_invoice    = $invoice;
+        $this->_shipment   = $shipment;
         $this->_creditMemo = $creditMemo;
         $this->_helperData = $helperData;
-        $this->_registry = $registry;
-        $this->_meta = $meta;
+        $this->_registry   = $registry;
+        $this->_meta       = $meta;
         $this->_connection = $connection->getConnection();
     }
 
@@ -143,9 +143,9 @@ class SameOrderNumber
     public function getNextId($collection, $type)
     {
         $orderIncrementId = $this->getOrder()->getIncrementId();
-        $newIncrementId = $orderIncrementId;
-        $totalIds = count($collection);
-        $firstId = $this->isIncrementIdUnique($orderIncrementId, $type);
+        $newIncrementId   = $orderIncrementId;
+        $totalIds         = count($collection);
+        $firstId          = $this->isIncrementIdUnique($orderIncrementId, $type);
 
         if ($firstId && $totalIds <= 0) {
             $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
@@ -153,7 +153,7 @@ class SameOrderNumber
 
         if ($totalIds > 0) {
             $newIncrementId = $orderIncrementId . "-" . $totalIds;
-            $nextId = $this->isIncrementIdUnique($newIncrementId, $type);
+            $nextId         = $this->isIncrementIdUnique($newIncrementId, $type);
             if ($nextId) {
                 $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
             }
@@ -165,11 +165,12 @@ class SameOrderNumber
     /**
      * @param $incrementId
      * @param $type
+     *
      * @return bool
      */
     public function isIncrementIdUnique($incrementId, $type)
     {
-        $nextId = null;
+        $nextId     = null;
         $collection = null;
         switch ($type) {
             case Apply::INVOICE:
@@ -203,7 +204,7 @@ class SameOrderNumber
                 case Apply::INVOICE:
                     if ($invoice !== null) {
                         $orderIncrementId = $invoice->getOrder()->getIncrementId();
-                        $isNotUnique = $this->isIncrementIdUnique($orderIncrementId, Apply::INVOICE);
+                        $isNotUnique      = $this->isIncrementIdUnique($orderIncrementId, Apply::INVOICE);
                         if ($isNotUnique) {
                             $orderIncrementId = $invoice->getOrder()->getIncrementId() . "-1";
                         }
@@ -236,7 +237,7 @@ class SameOrderNumber
     {
         $type = null;
         if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
-            $type = Apply::INVOICE;
+            $type        = Apply::INVOICE;
             $invoiceData = $this->_request->getPost('invoice');
             if (isset($invoiceData['do_shipment'])) {
                 $type = Apply::SHIPMENT;
@@ -262,12 +263,12 @@ class SameOrderNumber
     public function jumpIncrementId($type, $storeId, $oderId)
     {
         if ($type !== null) {
-            $sequenceTable = $this->_meta->loadByEntityTypeAndStore($type, $storeId)->getSequenceTable();
-            $idField = $this->_connection->getAutoIncrementField($sequenceTable);
-            $select = $this->_connection->select()->from($sequenceTable)->order($idField . ' DESC');
+            $sequenceTable  = $this->_meta->loadByEntityTypeAndStore($type, $storeId)->getSequenceTable();
+            $idField        = $this->_connection->getAutoIncrementField($sequenceTable);
+            $select         = $this->_connection->select()->from($sequenceTable)->order($idField . ' DESC');
             $curIncrementId = $this->_connection->fetchOne($select);
-            if ((int)$oderId > (int)$curIncrementId) {
-                $this->_connection->insert($sequenceTable, [$idField => (int)$oderId]);
+            if ((int) $oderId > (int) $curIncrementId) {
+                $this->_connection->insert($sequenceTable, [$idField => (int) $oderId]);
             }
         }
     }
@@ -275,16 +276,17 @@ class SameOrderNumber
     /**
      * @param Sequence $subject
      * @param callable $proceed
+     *
      * @return mixed
      * @throws LocalizedException
      */
     public function aroundGetNextValue(Sequence $subject, callable $proceed)
     {
         if ($this->_helperData->isAdmin()) {
-            $storeId = $this->getOrder()->getStore()->getId();
+            $storeId          = $this->getOrder()->getStore()->getId();
             $orderIncrementId = $this->getOrder()->getIncrementId();
             if ($storeId > 1) {
-                $length = strlen($orderIncrementId) - strlen($storeId);
+                $length           = strlen($orderIncrementId) - strlen($storeId);
                 $orderIncrementId = substr($orderIncrementId, strlen($storeId), $length);
             }
 
