@@ -53,7 +53,7 @@ class InvoiceSaveBefore implements ObserverInterface
         Registry $registry,
         HelperData $helperData
     ) {
-        $this->_registry = $registry;
+        $this->_registry   = $registry;
         $this->_helperData = $helperData;
     }
 
