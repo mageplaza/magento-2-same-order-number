@@ -245,6 +245,7 @@ class SameOrderNumber
             }
         }
         if ($this->_request->getPost('invoice')) {
+            $type        = Apply::INVOICE;
             $invoiceData = $this->_request->getPost('invoice');
             if (isset($invoiceData['do_shipment'])) {
                 $type = Apply::SHIPMENT;
