@@ -245,7 +245,7 @@ class SameOrderNumber
             }
         }
         if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
-            $type        = Apply::INVOICE;
+            $type = Apply::INVOICE;
         }
         if ($this->_request->getPost('shipment') && $this->_helperData->isApplyShipment($storeId)) {
             $type = Apply::SHIPMENT;
