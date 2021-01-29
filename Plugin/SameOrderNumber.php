@@ -237,19 +237,15 @@ class SameOrderNumber
     {
         $type = null;
 
-        if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
-            $type        = Apply::INVOICE;
-            $invoiceData = $this->_request->getPost('invoice');
-            if (isset($invoiceData['do_shipment'])) {
-                $type = Apply::SHIPMENT;
-            }
-        }
         if ($this->_request->getPost('invoice')) {
             $type        = Apply::INVOICE;
             $invoiceData = $this->_request->getPost('invoice');
             if (isset($invoiceData['do_shipment'])) {
                 $type = Apply::SHIPMENT;
             }
+        }
+        if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
+            $type        = Apply::INVOICE;
         }
         if ($this->_request->getPost('shipment') && $this->_helperData->isApplyShipment($storeId)) {
             $type = Apply::SHIPMENT;
