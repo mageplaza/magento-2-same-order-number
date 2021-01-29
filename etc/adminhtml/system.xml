@@ -38,7 +38,9 @@
                 <field id="apply" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Apply for</label>
                     <source_model>\Mageplaza\SameOrderNumber\Model\System\Config\Source\Apply</source_model>
-                    <comment>If increment id exist, a sufix number will be added. Ex: 100001-1, 100001-2</comment>
+                    <comment><![CDATA[If increment id exist, a sufix number will be added. Ex: 100001-1, 100001-2 <br />
+                        <b>Note:</b>If you want to apply <b>Shipment</b> number when process <b>Invoice</b>, you need to choose <b>both Shipment and Invoice</b> option]]>
+                    </comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
