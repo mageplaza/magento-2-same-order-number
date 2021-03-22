@@ -77,4 +77,14 @@ class Data extends AbstractData
     {
         return in_array(Apply::CREDIT_MEMO, $this->getApplyForOption($storeId));
     }
+
+    /**
+     * @param string $moduleName
+     *
+     * @return bool
+     */
+    public function isModuleEnabled($moduleName)
+    {
+        return $this->_moduleManager->isEnabled($moduleName);
+    }
 }
