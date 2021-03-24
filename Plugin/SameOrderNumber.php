@@ -147,17 +147,15 @@ class SameOrderNumber
         $totalIds         = count($collection);
         $firstId          = $this->isIncrementIdUnique($orderIncrementId, $type);
 
-        if (!$this->_helperData->isModuleEnabled('Mageplaza_MassOrderActions')) {
-            if ($firstId && $totalIds <= 0) {
-                $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
-            }
+        if ($firstId && $totalIds <= 0) {
+            $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
+        }
 
-            if ($totalIds > 0) {
-                $newIncrementId = $orderIncrementId . "-" . $totalIds;
-                $nextId         = $this->isIncrementIdUnique($newIncrementId, $type);
-                if ($nextId) {
-                    $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
-                }
+        if ($totalIds > 0) {
+            $newIncrementId = $orderIncrementId . "-" . $totalIds;
+            $nextId         = $this->isIncrementIdUnique($newIncrementId, $type);
+            if ($nextId) {
+                $newIncrementId = $orderIncrementId . "-" . ($totalIds + 1);
             }
         }
 
