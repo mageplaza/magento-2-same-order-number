@@ -77,5 +77,4 @@ class Data extends AbstractData
     {
         return in_array(Apply::CREDIT_MEMO, $this->getApplyForOption($storeId));
     }
-
 }
