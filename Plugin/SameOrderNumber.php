@@ -236,7 +236,8 @@ class SameOrderNumber
     public function getType($storeId)
     {
         $type = null;
-        if ($this->_request->getPost('invoice') && $this->_helperData->isApplyInvoice($storeId)) {
+
+        if ($this->_request->getPost('invoice') && ($this->_helperData->isApplyInvoice($storeId) || $this->_helperData->isApplyShipment($storeId))) {
             $type        = Apply::INVOICE;
             $invoiceData = $this->_request->getPost('invoice');
             if (isset($invoiceData['do_shipment'])) {
