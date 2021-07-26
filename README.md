@@ -21,6 +21,14 @@
 
 Run the following command in Magento 2 root folder:
 
+With Marketing Automation (recommend):
+```
+composer require mageplaza/module-same-order-number mageplaza/module-smtp
+php bin/magento setup:upgrade
+php bin/magento setup:static-content:deploy
+```
+
+Without Marketing Automation:
 ```
 composer require mageplaza/module-same-order-number
 php bin/magento setup:upgrade
