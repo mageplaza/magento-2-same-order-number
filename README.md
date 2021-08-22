@@ -1,4 +1,4 @@
-# Magento 2 Same Order Number Free Extensio
+# Magento 2 Same Order Number Free Extension
 
 [Magento 2 Same Order Number Extension](https://www.mageplaza.com/magento-2-same-order-number/) by **Mageplaza** allows store owners to easily create the ID of Invoice, Shipment and Credit Memo the same as the ID of the original Order. This will significantly contribute to a well-managed order information system.
 
@@ -21,6 +21,14 @@
 
 Run the following command in Magento 2 root folder:
 
+With Marketing Automation (recommend):
+```
+composer require mageplaza/module-same-order-number mageplaza/module-smtp
+php bin/magento setup:upgrade
+php bin/magento setup:static-content:deploy
+```
+
+Without Marketing Automation:
 ```
 composer require mageplaza/module-same-order-number
 php bin/magento setup:upgrade
@@ -31,7 +39,7 @@ php bin/magento setup:static-content:deploy
 
 ### Automatically same order ID update for billing documents
 
-**Magento 2 Same Order Number by Mageplaza** helps create the ID number for billing documents, associated with the ID of the original order after customers purchase. Documents that are possible to be set with the same order number are Invoice, Shipment and Credit Memo.
+**[Magento 2 Same Order Number](https://marketplace.magento.com/mageplaza-module-same-order-number.html) by Mageplaza** helps create the ID number for billing documents, associated with the ID of the original order after customers purchase. Documents that are possible to be set with the same order number are Invoice, Shipment and Credit Memo.
 
 ![Magento 2 Same Order Number](https://i.imgur.com/5B3YhmK.png)
 
@@ -129,3 +137,15 @@ Login to your Magento Admin Panel, navigate to `Store > Settings > Configuration
 - [Magento 2 security module](https://github.com/mageplaza/magento-2-security)
 
 
+**Get more [Magento 2 extension on Marketplace](https://marketplace.magento.com/partner/Mageplaza):**
+- [Magento 2 Configurable Product Preselect](https://marketplace.magento.com/mageplaza-module-configurable-product-grid-view.html)
+- [Magento 2 Payment Restriction](https://marketplace.magento.com/mageplaza-module-payment-restriction.html)
+- [Magento 2 Frequently Bought Together](https://marketplace.magento.com/mageplaza-module-frequently-bought-together.html)
+- [Magento 2 Worldpay](https://marketplace.magento.com/mageplaza-module-worldpay.html)
+- [Magento 2 Abandoned Cart Email](https://marketplace.magento.com/mageplaza-module-abandoned-cart-email.html)
+- [Magento 2 Pre-order](https://marketplace.magento.com/mageplaza-module-pre-order.html)
+- [Magento 2 Shipping Restrictions](https://marketplace.magento.com/mageplaza-module-shipping-restriction.html)
+- [Magento 2 Multiple Coupons](https://marketplace.magento.com/mageplaza-module-multiple-coupons.html)
+- [Magento 2 Order Attributes](https://marketplace.magento.com/mageplaza-module-order-attributes.html)
+- [Magento 2 Barcode](https://marketplace.magento.com/mageplaza-module-barcode.html)
+- [Magento 2 Quick Order](https://marketplace.magento.com/mageplaza-module-quick-order.html)
