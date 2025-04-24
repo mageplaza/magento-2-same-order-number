@@ -197,7 +197,7 @@ class SameOrderNumber
      *
      * @return string
      */
-    public function processIncrementId($defaultIncrementId, $type, Invoice $invoice = null)
+    public function processIncrementId($defaultIncrementId, $type, ?Invoice $invoice = null)
     {
         if ($type !== null) {
             switch ($type) {
